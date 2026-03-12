@@ -1,0 +1,5 @@
+### Get all contacts
+GET https://TU-APP.onrender.com/contacts
+
+### Get single contact by ID (reemplaza el ID con uno real de tu base de datos)
+GET https://TU-APP.onrender.com/contacts/PEGA_AQUI_UN_ID_REAL
