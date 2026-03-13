@@ -1,5 +1,48 @@
-### Get all contacts
-GET https://TU-APP.onrender.com/contacts
+@local = http://localhost:8080
+@render = https://cse-341-project1-6ep8.onrender.com
+@contactId = 69b23052bfd0464c030f98da
 
-### Get single contact by ID (reemplaza el ID con uno real de tu base de datos)
-GET https://TU-APP.onrender.com/contacts/PEGA_AQUI_UN_ID_REAL
+### Local - API docs
+GET {{local}}/api-docs
+
+### Local - Get all contacts
+GET {{local}}/contacts
+
+### Local - Get single contact
+GET {{local}}/contacts/{{contactId}}
+
+### Local - Create contact
+POST {{local}}/contacts
+Content-Type: application/json
+
+{
+	"firstName": "Elena",
+	"lastName": "Ruiz",
+	"email": "elena@example.com",
+	"favoriteColor": "orange",
+	"birthday": "1994-10-09"
+}
+
+### Local - Update contact
+PUT {{local}}/contacts/{{contactId}}
+Content-Type: application/json
+
+{
+	"firstName": "Luis",
+	"lastName": "Espinoza",
+	"email": "luis-updated@example.com",
+	"favoriteColor": "navy",
+	"birthday": "1995-03-15"
+}
+
+### Local - Delete contact (usa un id creado de prueba)
+DELETE {{local}}/contacts/{{contactId}}
+
+### Render - API docs
+GET {{render}}/api-docs
+
+### Render - Get all contacts
+GET {{render}}/contacts
+
+### Render - Get single contact
+GET {{render}}/contacts/{{contactId}}
