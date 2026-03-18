@@ -1,0 +1,231 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "W03 Project 2 API",
+    "description": "CRUD API for books and authors",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:8080",
+      "description": "Local"
+    }
+  ],
+  "tags": [
+    {
+      "name": "Books"
+    },
+    {
+      "name": "Authors"
+    }
+  ],
+  "components": {
+    "schemas": {
+      "Book": {
+        "type": "object",
+        "required": ["title", "genre", "authorName", "publishYear", "pages", "language", "inStock", "rating"],
+        "properties": {
+          "title": { "type": "string", "example": "Clean Code" },
+          "genre": { "type": "string", "example": "Software" },
+          "authorName": { "type": "string", "example": "Robert Martin" },
+          "publishYear": { "type": "integer", "example": 2008 },
+          "pages": { "type": "integer", "example": 464 },
+          "language": { "type": "string", "example": "English" },
+          "inStock": { "type": "boolean", "example": true },
+          "rating": { "type": "number", "example": 4.6 }
+        }
+      },
+      "Author": {
+        "type": "object",
+        "required": ["fullName", "email", "country", "birthDate", "primaryGenre", "awardsCount", "active"],
+        "properties": {
+          "fullName": { "type": "string", "example": "Isabel Allende" },
+          "email": { "type": "string", "example": "isabel@example.com" },
+          "country": { "type": "string", "example": "Chile" },
+          "birthDate": { "type": "string", "example": "1942-08-02" },
+          "primaryGenre": { "type": "string", "example": "Fiction" },
+          "awardsCount": { "type": "integer", "example": 10 },
+          "active": { "type": "boolean", "example": true }
+        }
+      }
+    }
+  },
+  "paths": {
+    "/books": {
+      "get": {
+        "tags": ["Books"],
+        "summary": "Get all books",
+        "responses": { "200": { "description": "Success" } }
+      },
+      "post": {
+        "tags": ["Books"],
+        "summary": "Create a new book",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/Book" }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Created" },
+          "400": { "description": "Validation error" },
+          "500": { "description": "Server error" }
+        }
+      }
+    },
+    "/books/{id}": {
+      "get": {
+        "tags": ["Books"],
+        "summary": "Get one book by ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "Success" },
+          "400": { "description": "Invalid id" },
+          "404": { "description": "Not found" },
+          "500": { "description": "Server error" }
+        }
+      },
+      "put": {
+        "tags": ["Books"],
+        "summary": "Update a book",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/Book" }
+            }
+          }
+        },
+        "responses": {
+          "204": { "description": "Updated" },
+          "400": { "description": "Validation or id error" },
+          "404": { "description": "Not found" },
+          "500": { "description": "Server error" }
+        }
+      },
+      "delete": {
+        "tags": ["Books"],
+        "summary": "Delete a book",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "204": { "description": "Deleted" },
+          "400": { "description": "Invalid id" },
+          "404": { "description": "Not found" },
+          "500": { "description": "Server error" }
+        }
+      }
+    },
+    "/authors": {
+      "get": {
+        "tags": ["Authors"],
+        "summary": "Get all authors",
+        "responses": { "200": { "description": "Success" } }
+      },
+      "post": {
+        "tags": ["Authors"],
+        "summary": "Create a new author",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/Author" }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Created" },
+          "400": { "description": "Validation error" },
+          "500": { "description": "Server error" }
+        }
+      }
+    },
+    "/authors/{id}": {
+      "get": {
+        "tags": ["Authors"],
+        "summary": "Get one author by ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "Success" },
+          "400": { "description": "Invalid id" },
+          "404": { "description": "Not found" },
+          "500": { "description": "Server error" }
+        }
+      },
+      "put": {
+        "tags": ["Authors"],
+        "summary": "Update an author",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/Author" }
+            }
+          }
+        },
+        "responses": {
+          "204": { "description": "Updated" },
+          "400": { "description": "Validation or id error" },
+          "404": { "description": "Not found" },
+          "500": { "description": "Server error" }
+        }
+      },
+      "delete": {
+        "tags": ["Authors"],
+        "summary": "Delete an author",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "204": { "description": "Deleted" },
+          "400": { "description": "Invalid id" },
+          "404": { "description": "Not found" },
+          "500": { "description": "Server error" }
+        }
+      }
+    }
+  }
+}

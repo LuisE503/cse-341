@@ -1,0 +1,98 @@
+@local = http://localhost:8080
+@bookId = REPLACE_BOOK_ID
+@authorId = REPLACE_AUTHOR_ID
+
+### Docs
+GET {{local}}/api-docs
+
+### BOOKS - GET all
+GET {{local}}/books
+
+### BOOKS - POST valid
+POST {{local}}/books
+Content-Type: application/json
+
+{
+  "title": "Deep Work",
+  "genre": "Productivity",
+  "authorName": "Cal Newport",
+  "publishYear": 2016,
+  "pages": 304,
+  "language": "English",
+  "inStock": true,
+  "rating": 4.5
+}
+
+### BOOKS - POST invalid (validation test)
+POST {{local}}/books
+Content-Type: application/json
+
+{
+  "title": "A"
+}
+
+### BOOKS - GET single
+GET {{local}}/books/{{bookId}}
+
+### BOOKS - PUT valid
+PUT {{local}}/books/{{bookId}}
+Content-Type: application/json
+
+{
+  "title": "Deep Work Updated",
+  "genre": "Productivity",
+  "authorName": "Cal Newport",
+  "publishYear": 2017,
+  "pages": 320,
+  "language": "English",
+  "inStock": false,
+  "rating": 4.7
+}
+
+### BOOKS - DELETE
+DELETE {{local}}/books/{{bookId}}
+
+### AUTHORS - GET all
+GET {{local}}/authors
+
+### AUTHORS - POST valid
+POST {{local}}/authors
+Content-Type: application/json
+
+{
+  "fullName": "Octavia Butler",
+  "email": "octavia.butler@example.com",
+  "country": "USA",
+  "birthDate": "1947-06-22",
+  "primaryGenre": "Science Fiction",
+  "awardsCount": 6,
+  "active": false
+}
+
+### AUTHORS - POST invalid (validation test)
+POST {{local}}/authors
+Content-Type: application/json
+
+{
+  "fullName": "No"
+}
+
+### AUTHORS - GET single
+GET {{local}}/authors/{{authorId}}
+
+### AUTHORS - PUT valid
+PUT {{local}}/authors/{{authorId}}
+Content-Type: application/json
+
+{
+  "fullName": "Octavia E. Butler",
+  "email": "octavia.butler@example.com",
+  "country": "USA",
+  "birthDate": "1947-06-22",
+  "primaryGenre": "Speculative Fiction",
+  "awardsCount": 7,
+  "active": false
+}
+
+### AUTHORS - DELETE
+DELETE {{local}}/authors/{{authorId}}
