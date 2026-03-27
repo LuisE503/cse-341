@@ -1,9 +1,12 @@
 {
   "openapi": "3.0.0",
   "info": {
-    "title": "W03 Project 2 API",
-    "description": "CRUD API for books and authors",
-    "version": "1.0.0"
+    "title": "W03 Project 2 API - Books & Authors CRUD",
+    "description": "Professional REST API for managing books and authors with full CRUD operations, data validation, and error handling.",
+    "version": "1.0.0",
+    "contact": {
+      "name": "API Support"
+    }
   },
   "servers": [
     {
@@ -12,15 +15,17 @@
     },
     {
       "url": "http://localhost:8080",
-      "description": "Local (optional)"
+      "description": "Local development server"
     }
   ],
   "tags": [
     {
-      "name": "Books"
+      "name": "Books",
+      "description": "Operations for managing books"
     },
     {
-      "name": "Authors"
+      "name": "Authors",
+      "description": "Operations for managing authors"
     }
   ],
   "components": {
@@ -29,41 +34,167 @@
         "type": "object",
         "required": ["title", "genre", "authorName", "publishYear", "pages", "language", "inStock", "rating"],
         "properties": {
-          "title": { "type": "string", "example": "Clean Code" },
-          "genre": { "type": "string", "example": "Software" },
-          "authorName": { "type": "string", "example": "Robert Martin" },
-          "publishYear": { "type": "integer", "example": 2008 },
-          "pages": { "type": "integer", "example": 464 },
-          "language": { "type": "string", "example": "English" },
-          "inStock": { "type": "boolean", "example": true },
-          "rating": { "type": "number", "example": 4.6 }
+          "_id": {
+            "type": "string",
+            "description": "MongoDB unique identifier",
+            "example": "507f1f77bcf86cd799439011"
+          },
+          "title": {
+            "type": "string",
+            "minLength": 2,
+            "description": "Book title",
+            "example": "Clean Code"
+          },
+          "genre": {
+            "type": "string",
+            "minLength": 2,
+            "description": "Genre category",
+            "example": "Software Development"
+          },
+          "authorName": {
+            "type": "string",
+            "minLength": 2,
+            "description": "Author full name",
+            "example": "Robert C. Martin"
+          },
+          "publishYear": {
+            "type": "integer",
+            "minimum": 1000,
+            "maximum": 2100,
+            "description": "Year of publication",
+            "example": 2008
+          },
+          "pages": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "Number of pages",
+            "example": 464
+          },
+          "language": {
+            "type": "string",
+            "minLength": 2,
+            "description": "Language of publication",
+            "example": "English"
+          },
+          "inStock": {
+            "type": "boolean",
+            "description": "Availability status",
+            "example": true
+          },
+          "rating": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 5,
+            "description": "Rating score (0-5)",
+            "example": 4.7
+          }
         }
       },
       "Author": {
         "type": "object",
         "required": ["fullName", "email", "country", "birthDate", "primaryGenre", "awardsCount", "active"],
         "properties": {
-          "fullName": { "type": "string", "example": "Isabel Allende" },
-          "email": { "type": "string", "example": "isabel@example.com" },
-          "country": { "type": "string", "example": "Chile" },
-          "birthDate": { "type": "string", "example": "1942-08-02" },
-          "primaryGenre": { "type": "string", "example": "Fiction" },
-          "awardsCount": { "type": "integer", "example": 10 },
-          "active": { "type": "boolean", "example": true }
+          "_id": {
+            "type": "string",
+            "description": "MongoDB unique identifier",
+            "example": "507f1f77bcf86cd799439012"
+          },
+          "fullName": {
+            "type": "string",
+            "minLength": 3,
+            "description": "Author's full name",
+            "example": "Isabel Allende"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "description": "Author's email address",
+            "example": "isabel@example.com"
+          },
+          "country": {
+            "type": "string",
+            "minLength": 2,
+            "description": "Country of origin",
+            "example": "Chile"
+          },
+          "birthDate": {
+            "type": "string",
+            "format": "date",
+            "description": "Birth date (YYYY-MM-DD format)",
+            "example": "1942-08-02"
+          },
+          "primaryGenre": {
+            "type": "string",
+            "minLength": 2,
+            "description": "Primary literary genre",
+            "example": "Fiction"
+          },
+          "awardsCount": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Number of literary awards received",
+            "example": 15
+          },
+          "active": {
+            "type": "boolean",
+            "description": "Whether author is currently active",
+            "example": true
+          }
         }
       }
     }
   },
   "paths": {
+    "/": {
+      "get": {
+        "summary": "API Health Check",
+        "description": "Verify that the API is running",
+        "tags": ["General"],
+        "responses": {
+          "200": {
+            "description": "API is running successfully"
+          }
+        }
+      }
+    },
+    "/api-docs": {
+      "get": {
+        "summary": "API Documentation",
+        "description": "View interactive Swagger documentation",
+        "tags": ["General"],
+        "responses": {
+          "200": {
+            "description": "Swagger UI loaded successfully"
+          }
+        }
+      }
+    },
     "/books": {
       "get": {
         "tags": ["Books"],
-        "summary": "Get all books",
-        "responses": { "200": { "description": "Success" } }
+        "summary": "Retrieve all books",
+        "description": "Get a list of all books in the database",
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved all books",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/Book" }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error occurred"
+          }
+        }
       },
       "post": {
         "tags": ["Books"],
         "summary": "Create a new book",
+        "description": "Add a new book to the database with validation",
         "requestBody": {
           "required": true,
           "content": {
@@ -73,40 +204,63 @@
           }
         },
         "responses": {
-          "201": { "description": "Created" },
-          "400": { "description": "Validation error" },
-          "500": { "description": "Server error" }
+          "201": {
+            "description": "Book created successfully"
+          },
+          "400": {
+            "description": "Validation error - check required fields and data types"
+          },
+          "500": {
+            "description": "Server error occurred"
+          }
         }
       }
     },
     "/books/{id}": {
       "get": {
         "tags": ["Books"],
-        "summary": "Get one book by ID",
+        "summary": "Get a book by ID",
+        "description": "Retrieve a specific book using its MongoDB ID",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "schema": { "type": "string" }
+            "schema": { "type": "string" },
+            "description": "MongoDB book ID"
           }
         ],
         "responses": {
-          "200": { "description": "Success" },
-          "400": { "description": "Invalid id" },
-          "404": { "description": "Not found" },
-          "500": { "description": "Server error" }
+          "200": {
+            "description": "Book found successfully",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Book" }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid book ID format"
+          },
+          "404": {
+            "description": "Book not found"
+          },
+          "500": {
+            "description": "Server error occurred"
+          }
         }
       },
       "put": {
         "tags": ["Books"],
         "summary": "Update a book",
+        "description": "Update all fields of an existing book with validation",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "schema": { "type": "string" }
+            "schema": { "type": "string" },
+            "description": "MongoDB book ID"
           }
         ],
         "requestBody": {
@@ -118,40 +272,75 @@
           }
         },
         "responses": {
-          "204": { "description": "Updated" },
-          "400": { "description": "Validation or id error" },
-          "404": { "description": "Not found" },
-          "500": { "description": "Server error" }
+          "204": {
+            "description": "Book updated successfully"
+          },
+          "400": {
+            "description": "Invalid ID format or validation error"
+          },
+          "404": {
+            "description": "Book not found"
+          },
+          "500": {
+            "description": "Server error occurred"
+          }
         }
       },
       "delete": {
         "tags": ["Books"],
         "summary": "Delete a book",
+        "description": "Remove a book from the database",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "schema": { "type": "string" }
+            "schema": { "type": "string" },
+            "description": "MongoDB book ID"
           }
         ],
         "responses": {
-          "204": { "description": "Deleted" },
-          "400": { "description": "Invalid id" },
-          "404": { "description": "Not found" },
-          "500": { "description": "Server error" }
+          "204": {
+            "description": "Book deleted successfully"
+          },
+          "400": {
+            "description": "Invalid book ID format"
+          },
+          "404": {
+            "description": "Book not found"
+          },
+          "500": {
+            "description": "Server error occurred"
+          }
         }
       }
     },
     "/authors": {
       "get": {
         "tags": ["Authors"],
-        "summary": "Get all authors",
-        "responses": { "200": { "description": "Success" } }
+        "summary": "Retrieve all authors",
+        "description": "Get a list of all authors in the database",
+        "responses": {
+          "200": {
+            "description": "Successfully retrieved all authors",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/Author" }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Server error occurred"
+          }
+        }
       },
       "post": {
         "tags": ["Authors"],
         "summary": "Create a new author",
+        "description": "Add a new author to the database with validation",
         "requestBody": {
           "required": true,
           "content": {
@@ -161,40 +350,63 @@
           }
         },
         "responses": {
-          "201": { "description": "Created" },
-          "400": { "description": "Validation error" },
-          "500": { "description": "Server error" }
+          "201": {
+            "description": "Author created successfully"
+          },
+          "400": {
+            "description": "Validation error - Invalid email format or missing required fields"
+          },
+          "500": {
+            "description": "Server error occurred"
+          }
         }
       }
     },
     "/authors/{id}": {
       "get": {
         "tags": ["Authors"],
-        "summary": "Get one author by ID",
+        "summary": "Get an author by ID",
+        "description": "Retrieve a specific author using their MongoDB ID",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "schema": { "type": "string" }
+            "schema": { "type": "string" },
+            "description": "MongoDB author ID"
           }
         ],
         "responses": {
-          "200": { "description": "Success" },
-          "400": { "description": "Invalid id" },
-          "404": { "description": "Not found" },
-          "500": { "description": "Server error" }
+          "200": {
+            "description": "Author found successfully",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Author" }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid author ID format"
+          },
+          "404": {
+            "description": "Author not found"
+          },
+          "500": {
+            "description": "Server error occurred"
+          }
         }
       },
       "put": {
         "tags": ["Authors"],
         "summary": "Update an author",
+        "description": "Update all fields of an existing author with validation",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "schema": { "type": "string" }
+            "schema": { "type": "string" },
+            "description": "MongoDB author ID"
           }
         ],
         "requestBody": {
@@ -206,28 +418,46 @@
           }
         },
         "responses": {
-          "204": { "description": "Updated" },
-          "400": { "description": "Validation or id error" },
-          "404": { "description": "Not found" },
-          "500": { "description": "Server error" }
+          "204": {
+            "description": "Author updated successfully"
+          },
+          "400": {
+            "description": "Invalid ID format or validation error"
+          },
+          "404": {
+            "description": "Author not found"
+          },
+          "500": {
+            "description": "Server error occurred"
+          }
         }
       },
       "delete": {
         "tags": ["Authors"],
         "summary": "Delete an author",
+        "description": "Remove an author from the database",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "schema": { "type": "string" }
+            "schema": { "type": "string" },
+            "description": "MongoDB author ID"
           }
         ],
         "responses": {
-          "204": { "description": "Deleted" },
-          "400": { "description": "Invalid id" },
-          "404": { "description": "Not found" },
-          "500": { "description": "Server error" }
+          "204": {
+            "description": "Author deleted successfully"
+          },
+          "400": {
+            "description": "Invalid author ID format"
+          },
+          "404": {
+            "description": "Author not found"
+          },
+          "500": {
+            "description": "Server error occurred"
+          }
         }
       }
     }
