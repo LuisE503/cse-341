@@ -1,144 +1,178 @@
 {
   "openapi": "3.0.0",
   "info": {
-    "title": "W03 Project 2 API - Books & Authors CRUD",
-    "description": "Professional REST API for managing books and authors with full CRUD operations, data validation, and error handling.",
-    "version": "1.0.0",
-    "contact": {
-      "name": "API Support"
-    }
+    "title": "W04 Project 2 API - Books, Authors, OAuth",
+    "description": "REST API with CRUD for books/authors, validation, error handling, and GitHub OAuth authentication.",
+    "version": "2.0.0"
   },
   "servers": [
     {
-      "url": "/",
-      "description": "Current host"
+      "url": "https://cse-341-5vgx.onrender.com",
+      "description": "Render deployment"
     },
     {
       "url": "http://localhost:8080",
-      "description": "Local development server"
+      "description": "Local development"
     }
   ],
   "tags": [
     {
+      "name": "Auth",
+      "description": "OAuth login, status and logout"
+    },
+    {
       "name": "Books",
-      "description": "Operations for managing books"
+      "description": "Book collection CRUD"
     },
     {
       "name": "Authors",
-      "description": "Operations for managing authors"
+      "description": "Author collection CRUD"
     }
   ],
   "components": {
+    "securitySchemes": {
+      "cookieAuth": {
+        "type": "apiKey",
+        "in": "cookie",
+        "name": "connect.sid",
+        "description": "Session cookie set after OAuth login."
+      }
+    },
     "schemas": {
       "Book": {
         "type": "object",
-        "required": ["title", "genre", "authorName", "publishYear", "pages", "language", "inStock", "rating"],
+        "required": [
+          "title",
+          "genre",
+          "authorName",
+          "publishYear",
+          "pages",
+          "language",
+          "inStock",
+          "rating"
+        ],
         "properties": {
           "_id": {
             "type": "string",
-            "description": "MongoDB unique identifier",
             "example": "507f1f77bcf86cd799439011"
           },
           "title": {
             "type": "string",
-            "minLength": 2,
-            "description": "Book title",
             "example": "Clean Code"
           },
           "genre": {
             "type": "string",
-            "minLength": 2,
-            "description": "Genre category",
-            "example": "Software Development"
+            "example": "Software"
           },
           "authorName": {
             "type": "string",
-            "minLength": 2,
-            "description": "Author full name",
-            "example": "Robert C. Martin"
+            "example": "Robert Martin"
           },
           "publishYear": {
             "type": "integer",
-            "minimum": 1000,
-            "maximum": 2100,
-            "description": "Year of publication",
             "example": 2008
           },
           "pages": {
             "type": "integer",
-            "minimum": 1,
-            "description": "Number of pages",
             "example": 464
           },
           "language": {
             "type": "string",
-            "minLength": 2,
-            "description": "Language of publication",
             "example": "English"
           },
           "inStock": {
             "type": "boolean",
-            "description": "Availability status",
             "example": true
           },
           "rating": {
             "type": "number",
-            "minimum": 0,
-            "maximum": 5,
-            "description": "Rating score (0-5)",
-            "example": 4.7
+            "example": 4.5
           }
         }
       },
       "Author": {
         "type": "object",
-        "required": ["fullName", "email", "country", "birthDate", "primaryGenre", "awardsCount", "active"],
+        "required": [
+          "fullName",
+          "email",
+          "country",
+          "birthDate",
+          "primaryGenre",
+          "awardsCount",
+          "active"
+        ],
         "properties": {
           "_id": {
             "type": "string",
-            "description": "MongoDB unique identifier",
             "example": "507f1f77bcf86cd799439012"
           },
           "fullName": {
             "type": "string",
-            "minLength": 3,
-            "description": "Author's full name",
             "example": "Isabel Allende"
           },
           "email": {
             "type": "string",
             "format": "email",
-            "description": "Author's email address",
             "example": "isabel@example.com"
           },
           "country": {
             "type": "string",
-            "minLength": 2,
-            "description": "Country of origin",
             "example": "Chile"
           },
           "birthDate": {
             "type": "string",
             "format": "date",
-            "description": "Birth date (YYYY-MM-DD format)",
             "example": "1942-08-02"
           },
           "primaryGenre": {
             "type": "string",
-            "minLength": 2,
-            "description": "Primary literary genre",
             "example": "Fiction"
           },
           "awardsCount": {
             "type": "integer",
-            "minimum": 0,
-            "description": "Number of literary awards received",
-            "example": 15
+            "example": 5
           },
           "active": {
             "type": "boolean",
-            "description": "Whether author is currently active",
             "example": true
+          }
+        }
+      },
+      "AuthStatus": {
+        "type": "object",
+        "properties": {
+          "authenticated": {
+            "type": "boolean",
+            "example": true
+          },
+          "user": {
+            "type": ["object", "null"],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "githubId": {
+                "type": "string"
+              },
+              "username": {
+                "type": "string"
+              },
+              "displayName": {
+                "type": "string"
+              },
+              "email": {
+                "type": "string",
+                "nullable": true
+              }
+            }
+          }
+        }
+      },
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
           }
         }
       }
@@ -147,24 +181,71 @@
   "paths": {
     "/": {
       "get": {
-        "summary": "API Health Check",
-        "description": "Verify that the API is running",
-        "tags": ["General"],
+        "summary": "Health check",
         "responses": {
           "200": {
-            "description": "API is running successfully"
+            "description": "API is running"
           }
         }
       }
     },
-    "/api-docs": {
+    "/auth/login": {
       "get": {
-        "summary": "API Documentation",
-        "description": "View interactive Swagger documentation",
-        "tags": ["General"],
+        "tags": ["Auth"],
+        "summary": "Start GitHub OAuth login",
+        "responses": {
+          "302": {
+            "description": "Redirect to GitHub login"
+          },
+          "500": {
+            "description": "OAuth not configured",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/github/callback": {
+      "get": {
+        "tags": ["Auth"],
+        "summary": "OAuth callback endpoint",
+        "responses": {
+          "302": {
+            "description": "Redirects to /auth/status when successful"
+          }
+        }
+      }
+    },
+    "/auth/status": {
+      "get": {
+        "tags": ["Auth"],
+        "summary": "Get current session auth status",
         "responses": {
           "200": {
-            "description": "Swagger UI loaded successfully"
+            "description": "Returns whether current request is authenticated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthStatus"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/auth/logout": {
+      "get": {
+        "tags": ["Auth"],
+        "summary": "Log out and destroy session",
+        "responses": {
+          "200": {
+            "description": "Logged out"
           }
         }
       }
@@ -172,46 +253,56 @@
     "/books": {
       "get": {
         "tags": ["Books"],
-        "summary": "Retrieve all books",
-        "description": "Get a list of all books in the database",
+        "summary": "Get all books",
         "responses": {
           "200": {
-            "description": "Successfully retrieved all books",
+            "description": "Books list",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "array",
-                  "items": { "$ref": "#/components/schemas/Book" }
+                  "items": {
+                    "$ref": "#/components/schemas/Book"
+                  }
                 }
               }
             }
           },
           "500": {
-            "description": "Server error occurred"
+            "description": "Server error"
           }
         }
       },
       "post": {
         "tags": ["Books"],
-        "summary": "Create a new book",
-        "description": "Add a new book to the database with validation",
+        "summary": "Create a book (protected)",
+        "security": [
+          {
+            "cookieAuth": []
+          }
+        ],
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
-              "schema": { "$ref": "#/components/schemas/Book" }
+              "schema": {
+                "$ref": "#/components/schemas/Book"
+              }
             }
           }
         },
         "responses": {
           "201": {
-            "description": "Book created successfully"
+            "description": "Created"
           },
           "400": {
-            "description": "Validation error - check required fields and data types"
+            "description": "Validation error"
+          },
+          "401": {
+            "description": "Authentication required"
           },
           "500": {
-            "description": "Server error occurred"
+            "description": "Server error"
           }
         }
       }
@@ -219,98 +310,111 @@
     "/books/{id}": {
       "get": {
         "tags": ["Books"],
-        "summary": "Get a book by ID",
-        "description": "Retrieve a specific book using its MongoDB ID",
+        "summary": "Get one book by id",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "schema": { "type": "string" },
-            "description": "MongoDB book ID"
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
           "200": {
-            "description": "Book found successfully",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/Book" }
-              }
-            }
+            "description": "Book found"
           },
           "400": {
-            "description": "Invalid book ID format"
+            "description": "Invalid id"
           },
           "404": {
-            "description": "Book not found"
+            "description": "Not found"
           },
           "500": {
-            "description": "Server error occurred"
+            "description": "Server error"
           }
         }
       },
       "put": {
         "tags": ["Books"],
-        "summary": "Update a book",
-        "description": "Update all fields of an existing book with validation",
+        "summary": "Update a book (protected)",
+        "security": [
+          {
+            "cookieAuth": []
+          }
+        ],
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "schema": { "type": "string" },
-            "description": "MongoDB book ID"
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
-              "schema": { "$ref": "#/components/schemas/Book" }
+              "schema": {
+                "$ref": "#/components/schemas/Book"
+              }
             }
           }
         },
         "responses": {
           "204": {
-            "description": "Book updated successfully"
+            "description": "Updated"
           },
           "400": {
-            "description": "Invalid ID format or validation error"
+            "description": "Validation error or invalid id"
+          },
+          "401": {
+            "description": "Authentication required"
           },
           "404": {
-            "description": "Book not found"
+            "description": "Not found"
           },
           "500": {
-            "description": "Server error occurred"
+            "description": "Server error"
           }
         }
       },
       "delete": {
         "tags": ["Books"],
-        "summary": "Delete a book",
-        "description": "Remove a book from the database",
+        "summary": "Delete a book (protected)",
+        "security": [
+          {
+            "cookieAuth": []
+          }
+        ],
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "schema": { "type": "string" },
-            "description": "MongoDB book ID"
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
           "204": {
-            "description": "Book deleted successfully"
+            "description": "Deleted"
           },
           "400": {
-            "description": "Invalid book ID format"
+            "description": "Invalid id"
+          },
+          "401": {
+            "description": "Authentication required"
           },
           "404": {
-            "description": "Book not found"
+            "description": "Not found"
           },
           "500": {
-            "description": "Server error occurred"
+            "description": "Server error"
           }
         }
       }
@@ -318,46 +422,56 @@
     "/authors": {
       "get": {
         "tags": ["Authors"],
-        "summary": "Retrieve all authors",
-        "description": "Get a list of all authors in the database",
+        "summary": "Get all authors",
         "responses": {
           "200": {
-            "description": "Successfully retrieved all authors",
+            "description": "Authors list",
             "content": {
               "application/json": {
                 "schema": {
                   "type": "array",
-                  "items": { "$ref": "#/components/schemas/Author" }
+                  "items": {
+                    "$ref": "#/components/schemas/Author"
+                  }
                 }
               }
             }
           },
           "500": {
-            "description": "Server error occurred"
+            "description": "Server error"
           }
         }
       },
       "post": {
         "tags": ["Authors"],
-        "summary": "Create a new author",
-        "description": "Add a new author to the database with validation",
+        "summary": "Create an author (protected)",
+        "security": [
+          {
+            "cookieAuth": []
+          }
+        ],
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
-              "schema": { "$ref": "#/components/schemas/Author" }
+              "schema": {
+                "$ref": "#/components/schemas/Author"
+              }
             }
           }
         },
         "responses": {
           "201": {
-            "description": "Author created successfully"
+            "description": "Created"
           },
           "400": {
-            "description": "Validation error - Invalid email format or missing required fields"
+            "description": "Validation error"
+          },
+          "401": {
+            "description": "Authentication required"
           },
           "500": {
-            "description": "Server error occurred"
+            "description": "Server error"
           }
         }
       }
@@ -365,98 +479,111 @@
     "/authors/{id}": {
       "get": {
         "tags": ["Authors"],
-        "summary": "Get an author by ID",
-        "description": "Retrieve a specific author using their MongoDB ID",
+        "summary": "Get one author by id",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "schema": { "type": "string" },
-            "description": "MongoDB author ID"
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
           "200": {
-            "description": "Author found successfully",
-            "content": {
-              "application/json": {
-                "schema": { "$ref": "#/components/schemas/Author" }
-              }
-            }
+            "description": "Author found"
           },
           "400": {
-            "description": "Invalid author ID format"
+            "description": "Invalid id"
           },
           "404": {
-            "description": "Author not found"
+            "description": "Not found"
           },
           "500": {
-            "description": "Server error occurred"
+            "description": "Server error"
           }
         }
       },
       "put": {
         "tags": ["Authors"],
-        "summary": "Update an author",
-        "description": "Update all fields of an existing author with validation",
+        "summary": "Update an author (protected)",
+        "security": [
+          {
+            "cookieAuth": []
+          }
+        ],
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "schema": { "type": "string" },
-            "description": "MongoDB author ID"
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "requestBody": {
           "required": true,
           "content": {
             "application/json": {
-              "schema": { "$ref": "#/components/schemas/Author" }
+              "schema": {
+                "$ref": "#/components/schemas/Author"
+              }
             }
           }
         },
         "responses": {
           "204": {
-            "description": "Author updated successfully"
+            "description": "Updated"
           },
           "400": {
-            "description": "Invalid ID format or validation error"
+            "description": "Validation error or invalid id"
+          },
+          "401": {
+            "description": "Authentication required"
           },
           "404": {
-            "description": "Author not found"
+            "description": "Not found"
           },
           "500": {
-            "description": "Server error occurred"
+            "description": "Server error"
           }
         }
       },
       "delete": {
         "tags": ["Authors"],
-        "summary": "Delete an author",
-        "description": "Remove an author from the database",
+        "summary": "Delete an author (protected)",
+        "security": [
+          {
+            "cookieAuth": []
+          }
+        ],
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "schema": { "type": "string" },
-            "description": "MongoDB author ID"
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
           "204": {
-            "description": "Author deleted successfully"
+            "description": "Deleted"
           },
           "400": {
-            "description": "Invalid author ID format"
+            "description": "Invalid id"
+          },
+          "401": {
+            "description": "Authentication required"
           },
           "404": {
-            "description": "Author not found"
+            "description": "Not found"
           },
           "500": {
-            "description": "Server error occurred"
+            "description": "Server error"
           }
         }
       }
