@@ -59,8 +59,11 @@ const updateAuthor = async (req, res) => {
       return res.status(400).json({ message: validation.message });
     }
 
+    // MongoDB does not allow replacing immutable _id field.
+    const { _id, ...authorData } = req.body;
+
     const id = new ObjectId(req.params.id);
-    const response = await authorsCollection().replaceOne({ _id: id }, req.body);
+    const response = await authorsCollection().replaceOne({ _id: id }, authorData);
 
     if (response.matchedCount === 0) {
       return res.status(404).json({ message: 'Author not found.' });
