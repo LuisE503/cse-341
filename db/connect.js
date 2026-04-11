@@ -24,7 +24,7 @@ const getDb = () => {
   return db;
 };
 
-const getDatabaseName = () => process.env.DB_NAME || 'project2_w03';
+const getDatabaseName = () => process.env.DB_NAME || 'campus_events_clubs';
 
 module.exports = {
   initDb,

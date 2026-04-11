@@ -1,7 +1,7 @@
 {
-  "name": "w03-project2-part1",
+  "name": "campus-events-clubs-api",
   "version": "1.0.0",
-  "description": "CSE 341 W03 Project 2 Part 1",
+  "description": "CSE 341 Final Project API - Week 05 Part 1",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",

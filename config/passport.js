@@ -30,14 +30,14 @@ const initializePassport = (passport) => {
       },
       async (accessToken, refreshToken, profile, done) => {
         try {
-          const usersCollection = mongodb
+          const oauthUsersCollection = mongodb
             .getDb()
             .db(mongodb.getDatabaseName())
-            .collection('users');
+            .collection('oauthUsers');
 
           const mappedUser = mapProfileToUser(profile);
 
-          await usersCollection.updateOne(
+          await oauthUsersCollection.updateOne(
             { githubId: mappedUser.githubId },
             {
               $set: mappedUser,
@@ -46,7 +46,7 @@ const initializePassport = (passport) => {
             { upsert: true }
           );
 
-          const user = await usersCollection.findOne({ githubId: mappedUser.githubId });
+          const user = await oauthUsersCollection.findOne({ githubId: mappedUser.githubId });
           return done(null, user);
         } catch (error) {
           return done(error, null);
@@ -61,12 +61,12 @@ const initializePassport = (passport) => {
 
   passport.deserializeUser(async (id, done) => {
     try {
-      const usersCollection = mongodb
+      const oauthUsersCollection = mongodb
         .getDb()
         .db(mongodb.getDatabaseName())
-        .collection('users');
+        .collection('oauthUsers');
 
-      const user = await usersCollection.findOne({ _id: new ObjectId(id) });
+      const user = await oauthUsersCollection.findOne({ _id: new ObjectId(id) });
       done(null, user || null);
     } catch (error) {
       done(error, null);

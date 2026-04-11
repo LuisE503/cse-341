@@ -30,7 +30,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 app.get('/', (req, res) => {
-  res.status(200).send('W04 API is running with OAuth. Open /api-docs');
+  res.status(200).send('Campus Events and Clubs API is running. Open /api-docs');
 });
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));

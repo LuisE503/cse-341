@@ -1,6 +1,6 @@
 @local = http://localhost:8080
-@bookId = REPLACE_BOOK_ID
-@authorId = REPLACE_AUTHOR_ID
+@userId = REPLACE_USER_ID
+@clubId = REPLACE_CLUB_ID
 
 #######################################
 ### API DOCUMENTATION
@@ -10,249 +10,132 @@
 GET {{local}}/api-docs
 
 #######################################
-### BOOKS ENDPOINTS
+### USERS ENDPOINTS
 #######################################
 
-### BOOKS - GET all books
-GET {{local}}/books
+### USERS - GET all users
+GET {{local}}/users
 
-### BOOKS - POST valid (Create)
-POST {{local}}/books
+### USERS - POST valid (Create)
+POST {{local}}/users
 Content-Type: application/json
 
 {
-  "title": "Clean Code",
-  "genre": "Software Development",
-  "authorName": "Robert C. Martin",
-  "publishYear": 2008,
-  "pages": 464,
-  "language": "English",
-  "inStock": true,
-  "rating": 4.7
+  "fullName": "Luis Escarate",
+  "email": "luis@example.com",
+  "role": "student",
+  "passwordHash": "hash12345",
+  "isActive": true
 }
 
-### BOOKS - POST another book
-POST {{local}}/books
+### USERS - POST invalid (validation error)
+POST {{local}}/users
 Content-Type: application/json
 
 {
-  "title": "The Pragmatic Programmer",
-  "genre": "Software Engineering",
-  "authorName": "David Thomas",
-  "publishYear": 1999,
-  "pages": 352,
-  "language": "English",
-  "inStock": true,
-  "rating": 4.6
+  "fullName": "Lu",
+  "email": "bad-email"
 }
 
-### BOOKS - POST invalid (Missing fields - validation error)
-POST {{local}}/books
+### USERS - GET single by ID
+GET {{local}}/users/{{userId}}
+
+### USERS - GET with invalid ID (400)
+GET {{local}}/users/invalidid123
+
+### USERS - PUT valid (Update)
+PUT {{local}}/users/{{userId}}
 Content-Type: application/json
 
 {
-  "title": "A"
+  "fullName": "Luis Escarate Updated",
+  "email": "luis.updated@example.com",
+  "role": "organizer",
+  "passwordHash": "hash67890",
+  "isActive": true
 }
 
-### BOOKS - POST invalid rating (Rating > 5 - validation error)
-POST {{local}}/books
-Content-Type: application/json
-
-{
-  "title": "Invalid Book",
-  "genre": "Fiction",
-  "authorName": "Test Author",
-  "publishYear": 2020,
-  "pages": 300,
-  "language": "English",
-  "inStock": true,
-  "rating": 6.0
-}
-
-### BOOKS - GET single by ID
-GET {{local}}/books/{{bookId}}
-
-### BOOKS - GET with invalid ID (400 error)
-GET {{local}}/books/invalidid123
-
-### BOOKS - PUT update (Modify)
-PUT {{local}}/books/{{bookId}}
-Content-Type: application/json
-
-{
-  "title": "Clean Code - Updated Edition",
-  "genre": "Software Development",
-  "authorName": "Robert C. Martin",
-  "publishYear": 2020,
-  "pages": 480,
-  "language": "English",
-  "inStock": true,
-  "rating": 4.8
-}
-
-### BOOKS - PUT with invalid data (validation error)
-PUT {{local}}/books/{{bookId}}
-Content-Type: application/json
-
-{
-  "title": "A",
-  "genre": "Fiction",
-  "authorName": "Author",
-  "publishYear": 999,
-  "pages": 0,
-  "language": "English",
-  "inStock": true,
-  "rating": 10
-}
-
-### BOOKS - DELETE
-DELETE {{local}}/books/{{bookId}}
-
-### BOOKS - DELETE with invalid ID (400 error)
-DELETE {{local}}/books/invalidid123
-
-#######################################
-### AUTHORS ENDPOINTS
-#######################################
-
-### AUTHORS - GET all authors
-GET {{local}}/authors
-
-### AUTHORS - POST valid (Create)
-POST {{local}}/authors
-Content-Type: application/json
-
-{
-  "fullName": "Isabel Allende",
-  "email": "isabel@example.com",
-  "country": "Chile",
-  "birthDate": "1942-08-02",
-  "primaryGenre": "Fiction",
-  "awardsCount": 15,
-  "active": true
-}
-
-### AUTHORS - POST another author
-POST {{local}}/authors
-Content-Type: application/json
-
-{
-  "fullName": "Gabriel García Márquez",
-  "email": "gabriel@example.com",
-  "country": "Colombia",
-  "birthDate": "1927-03-06",
-  "primaryGenre": "Magical Realism",
-  "awardsCount": 20,
-  "active": true
-}
-
-### AUTHORS - POST invalid (Missing email field)
-POST {{local}}/authors
-Content-Type: application/json
-
-{
-  "fullName": "Test Author",
-  "country": "USA"
-}
-
-### AUTHORS - POST invalid (Invalid email format)
-POST {{local}}/authors
-Content-Type: application/json
-
-{
-  "fullName": "Invalid Author",
-  "email": "invalid-email-format",
-  "country": "USA",
-  "birthDate": "1980-01-01",
-  "primaryGenre": "Fiction",
-  "awardsCount": 5,
-  "active": true
-}
-
-### AUTHORS - GET single by ID
-GET {{local}}/authors/{{authorId}}
-
-### AUTHORS - GET with invalid ID (400 error)
-GET {{local}}/authors/invalidid123
-
-### AUTHORS - PUT update (Modify)
-PUT {{local}}/authors/{{authorId}}
-Content-Type: application/json
-
-{
-  "fullName": "Isabel Allende Updated",
-  "email": "isabel.updated@example.com",
-  "country": "Peru",
-  "birthDate": "1942-08-02",
-  "primaryGenre": "Fiction and Drama",
-  "awardsCount": 18,
-  "active": true
-}
-
-### AUTHORS - PUT with invalid data (validation error)
-PUT {{local}}/authors/{{authorId}}
+### USERS - PUT invalid (validation error)
+PUT {{local}}/users/{{userId}}
 Content-Type: application/json
 
 {
   "fullName": "A",
-  "email": "not-valid-email",
-  "country": "C",
-  "birthDate": "invalid",
-  "primaryGenre": "F",
-  "awardsCount": -5,
-  "active": "not-boolean"
+  "email": "not-an-email",
+  "role": "bad-role",
+  "passwordHash": "123"
 }
 
-### AUTHORS - DELETE
-DELETE {{local}}/authors/{{authorId}}
+### USERS - DELETE
+DELETE {{local}}/users/{{userId}}
 
-### AUTHORS - DELETE with invalid ID (400 error)
-DELETE {{local}}/authors/invalidid123
+#######################################
+### CLUBS ENDPOINTS
+#######################################
 
-### BOOKS - DELETE
-DELETE {{local}}/books/{{bookId}}
+### CLUBS - GET all clubs
+GET {{local}}/clubs
 
-### AUTHORS - GET all
-GET {{local}}/authors
-
-### AUTHORS - POST valid
-POST {{local}}/authors
+### CLUBS - POST valid (Create)
+POST {{local}}/clubs
 Content-Type: application/json
 
 {
-  "fullName": "Octavia Butler",
-  "email": "octavia.butler@example.com",
-  "country": "USA",
-  "birthDate": "1947-06-22",
-  "primaryGenre": "Science Fiction",
-  "awardsCount": 6,
-  "active": false
+  "name": "Coding Club",
+  "category": "Technology",
+  "description": "Software and programming activities",
+  "contactEmail": "codingclub@campus.edu",
+  "isActive": true
 }
 
-### AUTHORS - POST invalid (validation test)
-POST {{local}}/authors
+### CLUBS - POST invalid (validation error)
+POST {{local}}/clubs
 Content-Type: application/json
 
 {
-  "fullName": "No"
+  "name": "",
+  "category": ""
 }
 
-### AUTHORS - GET single
-GET {{local}}/authors/{{authorId}}
+### CLUBS - GET single by ID
+GET {{local}}/clubs/{{clubId}}
 
-### AUTHORS - PUT valid
-PUT {{local}}/authors/{{authorId}}
+### CLUBS - GET with invalid ID (400)
+GET {{local}}/clubs/invalidid123
+
+### CLUBS - PUT valid (Update)
+PUT {{local}}/clubs/{{clubId}}
 Content-Type: application/json
 
 {
-  "fullName": "Octavia E. Butler",
-  "email": "octavia.butler@example.com",
-  "country": "USA",
-  "birthDate": "1947-06-22",
-  "primaryGenre": "Speculative Fiction",
-  "awardsCount": 7,
-  "active": false
+  "name": "Coding Club Updated",
+  "category": "Engineering",
+  "description": "Updated club details",
+  "contactEmail": "club.updated@campus.edu",
+  "isActive": true
 }
 
-### AUTHORS - DELETE
-DELETE {{local}}/authors/{{authorId}}
+### CLUBS - PUT invalid (validation error)
+PUT {{local}}/clubs/{{clubId}}
+Content-Type: application/json
+
+{
+  "name": "A",
+  "category": ""
+}
+
+### CLUBS - DELETE
+DELETE {{local}}/clubs/{{clubId}}
+
+#######################################
+### AUTH ENDPOINTS (Optional for W05 demo)
+#######################################
+
+### AUTH - Status
+GET {{local}}/auth/status
+
+### AUTH - Login (redirect)
+GET {{local}}/auth/login
+
+### AUTH - Logout
+GET {{local}}/auth/logout
